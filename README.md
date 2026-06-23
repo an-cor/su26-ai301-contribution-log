@@ -174,3 +174,54 @@ To verify the fix, I plan to:
 3. Confirm the validation catches the missing or stale changelog condition.
 4. Confirm that cases with a valid changelog entry still pass.
 5. Confirm that documentation-only or skipped changelog cases behave according to the repository’s contribution rules.
+
+
+## Phase III: Build
+
+### Implementation Notes
+
+For Phase III, I implemented a small, scoped documentation/process change for OpenSearch k-NN issue #2970.
+
+Based on my Phase II investigation, the issue appears to be a release/changelog workflow problem rather than a k-NN runtime bug. The release notes can become incorrect when `CHANGELOG.md` exists but contains stale or inaccurate information. I chose a minimal implementation path by updating `CONTRIBUTING.md` instead of changing Java code or modifying GitHub Actions workflows.
+
+The previous changelog instructions told contributors to add changelog entries with dummy pull request information and update the entry later. That process can lead to incorrect release notes if the placeholder entry is never corrected. My change removes the dummy PR guidance and clarifies that contributors should verify the changelog entry references the correct pull request and accurately describes the change before merge.
+
+### Code Changes
+
+Development branch: https://github.com/an-cor/k-NN/tree/fix-issue-2970
+
+Commit: https://github.com/an-cor/k-NN/commit/fdc638d2
+
+Pull request: https://github.com/opensearch-project/k-NN/pull/3380
+
+Files changed:
+
+```text
+CONTRIBUTING.md
+```
+
+Summary of change:
+
+* Added a note that release notes are generated from `CHANGELOG.md`.
+* Clarified that stale or inaccurate changelog entries can result in incorrect release notes.
+* Removed wording that encouraged dummy pull request information.
+* Updated the contributor workflow to emphasize verifying the correct PR reference before merge.
+
+### Testing Strategy
+
+Because this was a documentation-only change, I did not run the Java or Gradle test suite. The change does not modify k-NN runtime code, build logic, or GitHub Actions YAML.
+
+Validation performed:
+
+```bash
+git diff --check HEAD~1 HEAD
+git status
+```
+
+I intentionally avoided YAML validation because the final implementation only touched `CONTRIBUTING.md`. No workflow files were modified.
+
+### Challenges Faced
+
+The main challenge was scoping the issue appropriately. The issue could potentially lead to a larger release-engineering change, such as modifying changelog validation or changing how release notes are generated. Since I only had limited time, I chose a small, reviewable documentation/process fix that directly addresses one concrete source of the problem: stale or placeholder changelog entries.
+
+I also had to be careful not to claim the PR fully solves the entire release-note generation problem. Instead, I framed it as a focused improvement that addresses part of issue #2970 and can be reviewed independently.
