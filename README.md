@@ -225,3 +225,28 @@ I intentionally avoided YAML validation because the final implementation only to
 The main challenge was scoping the issue appropriately. The issue could potentially lead to a larger release-engineering change, such as modifying changelog validation or changing how release notes are generated. Since I only had limited time, I chose a small, reviewable documentation/process fix that directly addresses one concrete source of the problem: stale or placeholder changelog entries.
 
 I also had to be careful not to claim the PR fully solves the entire release-note generation problem. Instead, I framed it as a focused improvement that addresses part of issue #2970 and can be reviewed independently.
+
+## Phase IV: Submit & Iterate
+
+### Pull Request
+
+PR Link: https://github.com/opensearch-project/k-NN/pull/3380
+
+### PR Summary
+
+I submitted a focused documentation/process change to `CONTRIBUTING.md` for OpenSearch k-NN issue #2970. The PR clarifies that release notes are generated from `CHANGELOG.md`, removes guidance encouraging dummy pull request information, and asks contributors to verify changelog entries before merge.
+
+### Current Status
+
+Status: Iterating / Awaiting maintainer action
+
+The PR received approvals from two reviewers. Most checks are passing or skipped appropriately for a documentation-only change. The remaining blocker is the `Changelog Verifier` workflow, which failed because the PR does not update `CHANGELOG.md`.
+
+Since this is a documentation-only PR, I commented on the PR asking whether a maintainer can apply the `skip-changelog` label or whether they prefer that I add a changelog entry.
+
+### Maintainer Feedback / Next Steps
+
+- PR opened: https://github.com/opensearch-project/k-NN/pull/3380
+- Review received: two approvals
+- Current blocker: `Changelog Verifier` requires either a `CHANGELOG.md` update or the `skip-changelog` label
+- Next step: wait for maintainer guidance or label application
