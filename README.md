@@ -250,3 +250,27 @@ Since this is a documentation-only PR, I commented on the PR asking whether a ma
 - Review received: two approvals
 - Current blocker: `Changelog Verifier` requires either a `CHANGELOG.md` update or the `skip-changelog` label
 - Next step: wait for maintainer guidance or label application
+
+### Week 5 Update
+
+My pull request was merged into the upstream OpenSearch k-NN repository.
+
+PR: https://github.com/opensearch-project/k-NN/pull/3380
+Merged status: Merged
+Merged by: `shatejas`
+Final status: Completed / Merged
+
+This PR contributed a focused documentation/process improvement to `CONTRIBUTING.md`. It clarified that release notes are generated from `CHANGELOG.md`, removed guidance encouraging dummy pull request information, and asked contributors to verify changelog entries before merge.
+
+The original issue #2970 remains open because the broader release-note generation problem may still require additional enforcement or build-repo workflow changes. My PR addressed one concrete source of the problem by improving the contributor guidance around stale or placeholder changelog entries.
+
+### Reflection
+
+This contribution taught me that not every open-source fix is a runtime code change. Some issues are process bugs, documentation bugs, or release-engineering problems. I also learned how important it is to scope a contribution honestly: my PR did not claim to fully close #2970, but it did provide a small, reviewable improvement that maintainers accepted and merged.
+
+### Next Steps
+
+For the next part of the course, I plan to:
+
+1. monitor issue #2970 in case maintainers want follow-up work around changelog enforcement, or
+2. start a second contribution cycle with another OpenSearch k-NN issue.
