@@ -1,7 +1,7 @@
 # su26-ai301-contribution-log
 CodePath's AI Open Source Capstone living document that tracks everything from issue selection through pull request submissions
 
-# Issue
+# OpenSearch k-NN Issue
 
 Repository: k-NN
 
@@ -274,3 +274,155 @@ For the next part of the course, I plan to:
 
 1. monitor issue #2970 in case maintainers want follow-up work around changelog enforcement, or
 2. start a second contribution cycle with another OpenSearch k-NN issue.
+
+---
+
+# Final Status: OpenSearch k-NN
+
+## Final Outcome
+
+Repository: OpenSearch k-NN
+Issue: #2970 – Incorrect changelog creating incorrect release notes
+Issue Link: https://github.com/opensearch-project/k-NN/issues/2970
+Pull Request: https://github.com/opensearch-project/k-NN/pull/3380
+Final PR Status: Merged
+
+My first contribution cycle is complete. PR #3380 was merged into the upstream OpenSearch k-NN repository. The contribution updated `CONTRIBUTING.md` to clarify changelog accuracy expectations, remove guidance encouraging dummy pull request information, and reduce the chance of stale changelog entries producing incorrect release notes.
+
+The original issue remains open because the broader release-note generation problem may still require additional enforcement or build-repo workflow changes. My PR addressed one concrete source of the problem and was accepted as a focused documentation/process improvement.
+
+## Final Reflection
+
+This cycle taught me that open-source contributions are not always runtime code changes. Some valuable fixes improve release processes, contributor guidance, or project maintainability. I also learned how important it is to scope a PR honestly: my PR did not claim to fully close the issue, but it did address part of the problem in a way maintainers accepted and merged.
+
+---
+
+# Vector Issue
+
+Repository: Vector
+Project Link: https://github.com/vectordotdev/vector
+Fork: https://github.com/an-cor/vector
+
+Issue: #1065 – Only warn about small files when they are not empty
+Issue Link: https://github.com/vectordotdev/vector/issues/1065
+
+## Why I Chose This Issue
+
+I chose Vector issue #1065 because it is related to observability, file-based log ingestion, and production log noise. The issue describes a case where Vector emits the warning `Currently ignoring file too small to fingerprint` for files that may be empty, which can create noisy logs in environments with many short-lived or empty log files. This matters because operators need warnings to indicate real problems, not harmless empty-file cases.
+
+This issue seems like a good second contribution because it is labeled as a good first issue, is still open, has no active linked PR, and appears to be contained within the file source or file fingerprinting logic. It also connects well to data engineering and observability because Vector is a data pipeline tool used for log and metrics collection.
+
+From reading the issue thread, my understanding is that non-empty files that are too small to fingerprint should still warn because they may represent a real ingestion problem. Empty files, however, should likely be handled without emitting the same warning because they can be common in production environments and may not require user action.
+
+## Phase I Status
+
+Status: Phase I Complete
+
+Completed Phase I tasks:
+
+* Selected Vector issue #1065 as my second contribution cycle.
+* Forked the Vector repository to my GitHub account.
+* Left a comment on the issue expressing interest and summarizing my understanding of the problem.
+* Started documenting the issue in this Contribution README.
+
+## Phase II: Reproduce & Plan
+
+### Environment Setup
+
+I cloned my fork of the Vector repository locally, added the upstream repository, fetched upstream branches and tags, created a working branch, and pushed it to my fork.
+
+Fork: https://github.com/an-cor/vector
+Branch: https://github.com/an-cor/vector/tree/fix-small-empty-file-warning
+Issue: https://github.com/vectordotdev/vector/issues/1065
+
+Commands used:
+
+```bash
+cd ~/Documents/codingprojects/CodePath/ai2
+git clone https://github.com/an-cor/vector.git
+cd vector
+git remote add upstream https://github.com/vectordotdev/vector.git
+git fetch upstream
+git checkout -b fix-small-empty-file-warning
+git push origin fix-small-empty-file-warning
+```
+
+### Initial Code Search
+
+To locate the warning mentioned in the issue, I searched the repository for the current log message and fingerprinting-related code.
+
+Commands used:
+
+```bash
+grep -R "Currently ignoring file too small to fingerprint" .
+grep -R "too small to fingerprint" .
+grep -R "fingerprint" src lib | head -100
+```
+
+The warning appears in:
+
+```text
+src/internal_events/file.rs
+```
+
+The search also showed likely related file-source and fingerprinting areas:
+
+```text
+src/sources/file.rs
+src/sources/kubernetes_logs/mod.rs
+lib/file-source/src/file_server.rs
+lib/file-source-common/src/checkpointer.rs
+```
+
+### Problem Summary
+
+The current issue is that Vector can emit a warning when a file is too small to fingerprint. This warning is useful for non-empty files because it can explain why Vector is not tailing or fingerprinting a file. However, the same warning can become noisy when the file is empty, especially in production environments with many short-lived jobs or log files.
+
+### Expected Behavior
+
+Vector should still warn when a non-empty file is too small to fingerprint, because that may indicate a real ingestion issue. Empty files should not emit the same warning, because empty files are often harmless and can create unnecessary log noise.
+
+### Actual Behavior
+
+The issue reports that Vector can emit the warning:
+
+```text
+Currently ignoring file too small to fingerprint.
+```
+
+for cases where the file may be empty or not actionable. This can pollute Vector’s own logs and make it harder for operators to distinguish meaningful warnings from expected empty-file behavior.
+
+### Implementation Plan
+
+My current plan is:
+
+1. Inspect `src/internal_events/file.rs` to understand how the warning event is emitted.
+2. Trace where that internal event is called from the file source/fingerprinting logic.
+3. Identify whether the caller has access to file size, file metadata, or read-length information.
+4. Update the logic so the warning is emitted only for non-empty files that are too small to fingerprint.
+5. Preserve the existing warning behavior for non-empty files.
+6. Add or update tests around the file source/fingerprinting path if there are existing nearby tests.
+7. Run the smallest relevant Rust test target I can identify for the changed file source/fingerprinting behavior.
+
+### Files Likely Involved
+
+Likely files to inspect or modify:
+
+```text
+src/internal_events/file.rs
+lib/file-source/src/file_server.rs
+src/sources/file.rs
+src/sources/kubernetes_logs/mod.rs
+```
+
+The exact file list may change after I trace the call path for the warning event.
+
+### Verification Plan
+
+To verify the fix, I plan to:
+
+1. Create or identify a test case for an empty file that is too small to fingerprint.
+2. Confirm the empty-file case does not emit the warning.
+3. Confirm a non-empty file that is too small to fingerprint still emits the warning.
+4. Run targeted tests for the file source or fingerprinting module.
+5. Run formatting/check commands required by Vector’s contribution guide if available.
