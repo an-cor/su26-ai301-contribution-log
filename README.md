@@ -426,3 +426,31 @@ To verify the fix, I plan to:
 3. Confirm a non-empty file that is too small to fingerprint still emits the warning.
 4. Run targeted tests for the file source or fingerprinting module.
 5. Run formatting/check commands required by Vector’s contribution guide if available.
+
+
+## Cycle 2 Phase III: Build
+
+### Implementation Notes
+
+I implemented a small fix for Vector issue #1065. The warning was emitted through the file-source-common fingerprinter path when fingerprinting returned `UnexpectedEof`. I updated the logic to record the file size from metadata and skip the checksum warning when the file is empty, while preserving the existing warning for non-empty files that are too small to fingerprint.
+
+### Code Changes
+
+Branch: https://github.com/an-cor/vector/tree/fix-small-empty-file-warning  
+Commit: https://github.com/an-cor/vector/commit/e8f82d1f3a  
+Pull Request: <paste PR link here>
+
+Files changed:
+
+- `lib/file-source-common/src/fingerprinter.rs`
+- `changelog.d/1065-empty-file-fingerprint-warning.fix.md`
+
+### Testing Strategy
+
+Validation performed:
+
+```bash
+cargo test -p file-source-common no_error_on_empty_file
+cargo test -p file-source-common fingerprinter
+cargo fmt --check
+git diff --check
