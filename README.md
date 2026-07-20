@@ -438,7 +438,7 @@ I implemented a small fix for Vector issue #1065. The warning was emitted throug
 
 Branch: https://github.com/an-cor/vector/tree/fix-small-empty-file-warning  
 Commit: https://github.com/an-cor/vector/commit/e8f82d1f3a  
-Pull Request: <paste PR link here>
+Pull Request: https://github.com/vectordotdev/vector/pull/25897
 
 Files changed:
 
