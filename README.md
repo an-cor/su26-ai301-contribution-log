@@ -226,6 +226,21 @@ The main challenge was scoping the issue appropriately. The issue could potentia
 
 I also had to be careful not to claim the PR fully solves the entire release-note generation problem. Instead, I framed it as a focused improvement that addresses part of issue #2970 and can be reviewed independently.
 
+### Expanded Testing / Validation Notes
+
+This PR was documentation-only and changed only `CONTRIBUTING.md`. Because it did not modify runtime code, build logic, Java classes, or GitHub Actions YAML, unit tests were not applicable. Based on instructor guidance, unit tests are mainly required when testing executable code, logic, math, proofs, or behavior-changing implementation.
+
+Instead, I validated the change with documentation-focused checks:
+
+- Confirmed the diff only modified `CONTRIBUTING.md`.
+- Ran `git diff --check HEAD~1 HEAD` to verify there were no whitespace or formatting errors.
+- Reviewed the rendered Markdown to make sure the updated contributor instructions were readable.
+- Verified that the previous guidance encouraging dummy pull request information was removed.
+- Verified that the new wording clearly explains that stale or inaccurate changelog entries can affect generated release notes.
+- Confirmed that no Java code, Gradle files, or workflow YAML files were changed, so the project test suite was not necessary for this scoped documentation change.
+
+The PR was reviewed, approved by two reviewers, and merged upstream, which confirmed that the scoped validation was acceptable for this contribution.
+
 ## Phase IV: Submit & Iterate
 
 ### Pull Request
