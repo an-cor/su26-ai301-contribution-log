@@ -469,3 +469,36 @@ cargo test -p file-source-common no_error_on_empty_file
 cargo test -p file-source-common fingerprinter
 cargo fmt --check
 git diff --check
+
+## Cycle 2 Phase IV: Submit & Iterate
+
+### Pull Request
+
+PR Link: https://github.com/vectordotdev/vector/pull/25897  
+Status: Submitted / Awaiting maintainer review
+
+### PR Summary
+
+I opened a pull request for Vector issue #1065 to reduce noisy file-source warnings. The PR changes the checksum fingerprinting path so empty files no longer emit the `Currently ignoring file too small to fingerprint` warning, while non-empty files that are too small to fingerprint still warn.
+
+### Implementation Update
+
+After opening the PR, an automated Codex review pointed out that my first implementation suppressed both the warning and the `known_small_files` tracking for empty files. That could affect retry/cleanup behavior when `remove_after_secs` is used.
+
+I updated the implementation so empty files are still inserted into `known_small_files` for retry/cleanup bookkeeping, while only suppressing `emit_file_checksum_failed` for empty files.
+
+### Files Changed
+
+- `lib/file-source-common/src/fingerprinter.rs`
+- `changelog.d/1065-empty-file-fingerprint-warning.fix.md`
+
+### Testing / Validation
+
+Validation performed locally:
+
+```bash
+cargo test -p file-source-common fingerprint_or_emit_only_warns_on_non_empty_small_files
+cargo test -p file-source-common fingerprinter
+cargo fmt --check
+git diff --check
+cargo clippy -p file-source-common --all-targets
