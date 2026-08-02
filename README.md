@@ -502,3 +502,33 @@ cargo test -p file-source-common fingerprinter
 cargo fmt --check
 git diff --check
 cargo clippy -p file-source-common --all-targets
+
+### Phase IV Update: PR Iteration
+
+After opening the Vector PR, I received automated Codex review feedback that identified two edge cases in my first implementation.
+
+The first issue was that empty files were tracked in `known_small_files`, but if an empty file later gained partial non-empty content, the warning might never emit because the path was already present in the tracking map.
+
+The second issue was that checking `metadata.len()` only measures the on-disk file size. For a gzip file with an empty decompressed stream, the compressed file has nonzero size, but the stream being fingerprinted is empty.
+
+I updated the implementation to address both cases:
+
+- Added separate small-file state so retry/cleanup tracking is independent from whether the warning has already emitted.
+- Preserved `known_small_files` cleanup behavior through `SmallFileState.first_seen`.
+- Suppressed warnings for empty raw files and empty decompressed gzip streams.
+- Preserved one warning for non-empty files that are too small to fingerprint.
+- Added coverage for empty-to-partial file transitions and empty gzip streams.
+
+Follow-up commits:
+
+- `6d72df567a` — Handle empty-to-partial fingerprint warning cases
+- `9f040384d6` — Wire small file state through file server
+
+Updated validation:
+
+```bash
+cargo test -p file-source-common fingerprint_or_emit
+cargo test -p file-source-common fingerprinter
+cargo fmt --check
+git diff --check
+cargo clippy -p file-source-common --all-targets
